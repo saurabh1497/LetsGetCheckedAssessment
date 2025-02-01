@@ -1,0 +1,9 @@
+<form (ngSubmit)="onSubmit()">
+    <label for="author">Author:</label>
+    <input type="text" id="author" [(ngModel)]="comment.author" name="author" required>
+  
+    <label for="text">Comment:</label>
+    <textarea id="text" [(ngModel)]="comment.text" name="text" required></textarea>
+  
+    <button type="submit">Add Comment</button>
+  </form>

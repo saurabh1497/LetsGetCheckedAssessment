@@ -1,0 +1,42 @@
+<div class="container mt-4">
+    <h1>{{ post?.title }}</h1>
+    <p class="text-muted">By {{ post?.author }} on {{ post?.date }}</p>
+    <p>{{ post?.description }}</p>
+  
+    <!-- Comments Section -->
+    <div class="mt-5">
+      <h3>Comments</h3>
+      <div *ngIf="comments.length === 0" class="alert alert-info">No comments yet.</div>
+      
+      <div *ngFor="let comment of comments" class="card mb-2">
+        <div class="card-body">
+          <h5 class="card-title">{{ comment.name }}</h5>
+          <p class="card-text">{{ comment.content }}</p>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Add Comment Form -->
+    <div class="mt-4">
+      <h4>Add a Comment</h4>
+      <form [formGroup]="commentForm" (ngSubmit)="addComment()">
+        <div class="mb-3">
+          <label class="form-label">Name</label>
+          <input type="text" class="form-control" formControlName="name">
+          <div *ngIf="commentForm.get('name')?.invalid && commentForm.get('name')?.touched" class="text-danger">
+            Name is required.
+          </div>
+        </div>
+      
+        <div class="mb-3">
+          <label class="form-label">Comment</label>
+          <textarea class="form-control" rows="3" formControlName="content"></textarea>
+          <div *ngIf="commentForm.get('content')?.invalid && commentForm.get('content')?.touched" class="text-danger">
+          </div>
+        </div>
+      
+        <button class="btn btn-primary" type="submit" [disabled]="commentForm.invalid">Submit</button>
+      </form>
+    </div>
+  </div>
+  

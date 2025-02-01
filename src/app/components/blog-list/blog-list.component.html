@@ -1,0 +1,68 @@
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <div class="container">
+    <a class="navbar-brand" routerLink="/">My Blog</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/about">About</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/contact">Contact</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- Blog Posts Section -->
+<div class="container mt-4">
+  <h1 class="mb-4">Blog Posts</h1>
+
+  <!-- Sort Button -->
+  <div class="d-flex justify-content-end mb-3">
+    <button class="btn btn-primary" (click)="toggleSortOrder()">
+      Sort by Date ({{ sortOrder === 'desc' ? 'Newest First' : 'Oldest First' }})
+    </button>
+  </div>
+
+  <div *ngFor="let post of paginatedPosts" class="card mb-4 shadow-sm">
+    <div class="card-body">
+      <h2 class="card-title h4">
+        <span class="text-decoration-none text-primary" role="button" (click)="viewPost(post.id)">
+          {{ post.title }}
+        </span>
+      </h2>      
+      <p class="card-subtitle mb-2 text-muted small">
+        By {{ post.author }} on {{ post.date }}
+      </p>
+      <p class="card-text">{{ post.description }}</p>
+    </div>
+  </div>
+
+  <!-- Show message if no posts exist -->
+  <div *ngIf="!posts?.length" class="alert alert-info">
+    No blog posts found.
+  </div>
+
+  <!-- Pagination -->
+  <nav *ngIf="totalPages > 1">
+    <ul class="pagination justify-content-center">
+      <li class="page-item" [class.disabled]="currentPage === 1">
+        <button class="page-link" (click)="previousPage()">Previous</button>
+      </li>
+      <li class="page-item" *ngFor="let page of pages" [class.active]="page === currentPage">
+        <button class="page-link" (click)="goToPage(page)">{{ page }}</button>
+      </li>
+      <li class="page-item" [class.disabled]="currentPage === totalPages">
+        <button class="page-link" (click)="nextPage()">Next</button>
+      </li>
+    </ul>
+  </nav>
+</div>
