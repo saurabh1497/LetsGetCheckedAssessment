@@ -1,29 +1,44 @@
 <!-- Navbar -->
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
+<nav class="navbar navbar-expand-lg navbar-light" style="background: linear-gradient(to right, #4A90E2, #50BFA5);">
   <div class="container">
-    <a class="navbar-brand" routerLink="/">My Blog</a>
+    <a class="navbar-brand fancy-heading" routerLink="/">BlogHorizon – Expanding your blogging journey</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav ms-auto">
         <li class="nav-item">
-          <a class="nav-link" routerLink="/">Home</a>
+          <a class="nav-link text-white" routerLink="/">Home</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" routerLink="/about">About</a>
+          <a class="nav-link text-white" (click)="openPopup('about')">About</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" routerLink="/contact">Contact</a>
+          <a class="nav-link text-white" (click)="openPopup('contact')">Contact</a>
         </li>
       </ul>
     </div>
   </div>
 </nav>
 
+<!-- Tagline Section -->
+<div class="tagline-container text-center my-4">
+  <h2 class="tagline">Publish your passions, your way</h2>
+  <p class="tagline-subtext">Create a unique and beautiful blog easily.</p>
+</div>
+
+<!-- Popups -->
+<div *ngIf="popupType" class="popup-overlay" (click)="closePopup()">
+  <div class="popup-content" (click)="$event.stopPropagation()">
+    <h2>{{ popupTitle }}</h2>
+    <p>{{ popupMessage }}</p>
+    <button class="btn popup-button" (click)="closePopup()">Dismiss</button>
+  </div>
+</div>
+
 <!-- Blog Posts Section -->
 <div class="container mt-4">
-  <h1 class="mb-4">Blog Posts</h1>
+  <h1 class="mb-4 text-center">Blog Posts</h1>
 
   <!-- Sort Button -->
   <div class="d-flex justify-content-end mb-3">
@@ -32,7 +47,7 @@
     </button>
   </div>
 
-  <div *ngFor="let post of paginatedPosts" class="card mb-4 shadow-sm">
+  <div *ngFor="let post of paginatedPosts" class="card mb-4 shadow-lg post-card">
     <div class="card-body">
       <h2 class="card-title h4">
         <span class="text-decoration-none text-primary" role="button" (click)="viewPost(post.id)">
@@ -40,15 +55,10 @@
         </span>
       </h2>      
       <p class="card-subtitle mb-2 text-muted small">
-        By {{ post.author }} on {{ post.date }}
+        By {{ post.author }} on {{ post.publish_date | date}}
       </p>
       <p class="card-text">{{ post.description }}</p>
     </div>
-  </div>
-
-  <!-- Show message if no posts exist -->
-  <div *ngIf="!posts?.length" class="alert alert-info">
-    No blog posts found.
   </div>
 
   <!-- Pagination -->
@@ -66,3 +76,87 @@
     </ul>
   </nav>
 </div>
+
+<style>
+.fancy-heading {
+  font-size: 2rem;
+  font-weight: bold;
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(to right, #FFD700, #FF8C00);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.tagline-container {
+  background: linear-gradient(to right, #4A90E2, #50BFA5);
+  padding: 30px;
+  color: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+.tagline {
+  font-size: 2rem;
+  font-weight: bold;
+}
+.tagline-subtext {
+  font-size: 1.2rem;
+  opacity: 0.9;
+}
+
+.post-card {
+  transition: transform 0.3s ease-in-out;
+  border: none;
+  border-radius: 10px;
+}
+.post-card:hover {
+  transform: scale(1.02);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1050;
+}
+.popup-content {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+  max-width: 400px;
+  text-align: center;
+  z-index: 1051;
+  position: relative;
+}
+
+.popup-button {
+  background: linear-gradient(to right, #4A90E2, #50BFA5);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s ease-in-out;
+}
+.popup-button:hover {
+  background: linear-gradient(to right, #3A78C2, #40A88A);
+}
+
+.pagination .page-link {
+  color: #4A90E2;
+  border: none;
+}
+.pagination .page-item.active .page-link {
+  background-color: #4A90E2;
+  color: white;
+  border-radius: 5px;
+}
+</style>

@@ -26,7 +26,10 @@ export class ApiService {
     return this.http.post<any>(`${this.baseUrl}/comments`, {user: comment.name, content: comment.content, postId});
   }
 
-  updateComment(commentId: number, updatedComment: any): Observable<any> {
-    return this.http.put<any>(`${this.baseUrl}/comments?commentId=${commentId}`, updatedComment);
+  updateComment(commentId: number, comment: { name: string, content: string }): Observable<any> {
+    return this.http.put<any>(`${this.baseUrl}/comments/${commentId}`, {
+      user: comment.name,
+      content: comment.content
+    });
   }
 }

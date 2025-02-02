@@ -1,13 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { ApiService } from '../../api.service';
-import { NgFor, NgIf } from '@angular/common';
+import { CommonModule, NgFor, NgIf } from '@angular/common';
 import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-blog-list',
   templateUrl: './blog-list.component.html',
   styleUrls: ['./blog-list.component.scss'],
-  imports: [NgFor, NgIf]
+  imports: [NgFor, NgIf, CommonModule]
 })
 export class BlogListComponent implements OnInit {
   posts: any[] = [];
@@ -17,6 +17,9 @@ export class BlogListComponent implements OnInit {
   totalPages: number = 1;
   pages: number[] = [];
   sortOrder: 'asc' | 'desc' = 'desc'; // Default: Newest First
+  popupType: string | null = null;
+  popupTitle: string = '';
+  popupMessage: string = '';
 
   constructor(private apiService: ApiService,
     private router: Router
@@ -37,8 +40,8 @@ export class BlogListComponent implements OnInit {
   sortPosts(): void {
     this.posts.sort((a, b) => 
       this.sortOrder === 'desc' 
-        ? new Date(b.date).getTime() - new Date(a.date).getTime() 
-        : new Date(a.date).getTime() - new Date(b.date).getTime()
+        ? new Date(b.publish_date).getTime() - new Date(a.publish_date).getTime() 
+        : new Date(a.publish_date).getTime() - new Date(b.publish_date).getTime()
     );
     this.totalPages = Math.ceil(this.posts.length / this.postsPerPage);
     this.pages = Array.from({ length: this.totalPages }, (_, i) => i + 1);
@@ -76,5 +79,20 @@ export class BlogListComponent implements OnInit {
 
   viewPost(postId: number): void {
     this.router.navigate(['/post', postId]);
+  }
+
+  openPopup(type: string): void {
+    this.popupType = type;
+    if (type === 'about') {
+      this.popupTitle = 'About Us';
+      this.popupMessage = 'This is a simple blog application providing insightful articles.';
+    } else if (type === 'contact') {
+      this.popupTitle = 'Contact Us';
+      this.popupMessage = 'You can reach us at contact@myblog.com or call us at +123456789.';
+    }
+  }
+  
+  closePopup(): void {
+    this.popupType = null;
   }
 }

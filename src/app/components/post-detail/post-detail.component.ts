@@ -2,19 +2,20 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ApiService } from '../../api.service';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { NgFor, NgIf } from '@angular/common';
+import { CommonModule, NgFor, NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-post-detail',
   templateUrl: './post-detail.component.html',
   styleUrls: ['./post-detail.component.scss'],
-  imports: [NgFor, NgIf, ReactiveFormsModule]
+  imports: [NgFor, NgIf, ReactiveFormsModule, CommonModule]
 })
 export class PostDetailComponent implements OnInit {
   post: any;
   comments: any[] = [];
   commentForm: FormGroup;
   postId!: number;
+  editingCommentId: any = null;
 
   constructor(
     private route: ActivatedRoute,
@@ -24,9 +25,8 @@ export class PostDetailComponent implements OnInit {
   
   {
     this.commentForm = this.fb.group({
-      name: [''],
-      content: ['']
-      
+      name: ['', Validators.required],
+      content: ['', [Validators.required, Validators.minLength(5)]]
     });
   }
 
@@ -34,8 +34,8 @@ export class PostDetailComponent implements OnInit {
     this.postId = Number(this.route.snapshot.paramMap.get('id'));
 
     this.commentForm = new FormGroup({
-      name: new FormControl(''),
-      content: new FormControl('')
+      name: new FormControl('', Validators.required),
+      content: new FormControl('', [Validators.required, Validators.minLength(5)])
     });
     
     // Fetch post details
@@ -58,15 +58,47 @@ export class PostDetailComponent implements OnInit {
       name: this.commentForm.value.name,
       content: this.commentForm.value.content
     };
-    console.log("add comment called");
 
     this.apiService.addComment(this.postId, newComment).subscribe(
       (response) => {
-        console.log("add comment called2");
         this.comments.push(response);
         this.commentForm.reset();
       },
       (error) => console.error('Error adding comment:', error)
     );
+  }
+
+  editComment(comment: any): void {
+    this.editingCommentId = comment.id; // Track which comment is being edited
+    this.commentForm.patchValue({
+      name: comment.name,
+      content: comment.content
+    });
+  }
+
+  updateComment(): void {
+    if (this.commentForm.invalid) return;
+
+    const updatedComment = {
+      name: this.commentForm.value.name,
+      content: this.commentForm.value.content
+    };
+
+    this.apiService.updateComment(this.editingCommentId, updatedComment).subscribe(
+      (response) => {
+        const index = this.comments.findIndex(c => c.id === this.editingCommentId);
+        if (index !== -1) {
+          this.comments[index] = response;
+        }
+        this.commentForm.reset();
+        this.editingCommentId = null;
+      },
+      (error) => console.error('Error updating comment:', error)
+    );
+  }
+
+  cancelEdit(): void {
+    this.editingCommentId = null;
+    this.commentForm.reset();
   }
 }

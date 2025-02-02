@@ -1,42 +1,126 @@
 <div class="container mt-4">
-    <h1>{{ post?.title }}</h1>
-    <p class="text-muted">By {{ post?.author }} on {{ post?.date }}</p>
-    <p>{{ post?.description }}</p>
-  
-    <!-- Comments Section -->
-    <div class="mt-5">
-      <h3>Comments</h3>
-      <div *ngIf="comments.length === 0" class="alert alert-info">No comments yet.</div>
-      
-      <div *ngFor="let comment of comments" class="card mb-2">
-        <div class="card-body">
-          <h5 class="card-title">{{ comment.name }}</h5>
-          <p class="card-text">{{ comment.content }}</p>
-        </div>
+    <!-- Blog Post -->
+    <div class="card shadow-lg post-card mb-4">
+      <div class="card-body">
+        <h1 class="card-title text-primary">{{ post?.title }}</h1>
+        <p class="card-subtitle mb-2 text-muted">
+          By <span class="fw-bold">{{ post?.author }}</span> on {{ post?.publish_date | date }}
+        </p>
+        <p class="card-text">{{ post?.description }}</p>
       </div>
     </div>
   
-    <!-- Add Comment Form -->
-    <div class="mt-4">
-      <h4>Add a Comment</h4>
-      <form [formGroup]="commentForm" (ngSubmit)="addComment()">
-        <div class="mb-3">
-          <label class="form-label">Name</label>
-          <input type="text" class="form-control" formControlName="name">
-          <div *ngIf="commentForm.get('name')?.invalid && commentForm.get('name')?.touched" class="text-danger">
-            Name is required.
-          </div>
-        </div>
-      
-        <div class="mb-3">
-          <label class="form-label">Comment</label>
-          <textarea class="form-control" rows="3" formControlName="content"></textarea>
-          <div *ngIf="commentForm.get('content')?.invalid && commentForm.get('content')?.touched" class="text-danger">
-          </div>
-        </div>
-      
-        <button class="btn btn-primary" type="submit" [disabled]="commentForm.invalid">Submit</button>
-      </form>
-    </div>
-  </div>
+    <!-- Comments Section -->
+    <div class="card shadow-lg comments-card mb-4">
+      <div class="card-body">
+        <h2 class="h4 text-white">Comments</h2>
   
+        <!-- Comment List -->
+        <ul class="list-group mt-4">
+          <li class="list-group-item d-flex justify-content-between align-items-start comment-item" *ngFor="let comment of comments">
+            <div class="ms-2 me-auto">
+              <div class="fw-bold text-secondary">{{ comment.user }}</div>
+              <p class="mb-1">{{ comment.content }}</p>
+            </div>
+            <div>
+              <button class="btn btn-sm btn-edit me-2" (click)="editComment(comment)">
+                Edit
+              </button>
+            </div>
+          </li>
+        </ul>
+  
+        <!-- Add/Edit Comment Form -->
+        <form [formGroup]="commentForm" (ngSubmit)="editingCommentId ? updateComment() : addComment()">
+          <div class="mb-3">
+            <label for="name" class="form-label text-white">Name</label>
+            <input 
+              id="name" 
+              type="text" 
+              class="form-control" 
+              formControlName="name" 
+              [class.is-invalid]="commentForm.get('name')?.invalid && commentForm.get('name')?.touched"
+            />
+            <div class="invalid-feedback">
+              Name is required.
+            </div>
+          </div>
+  
+          <div class="mb-3">
+            <label for="content" class="form-label text-white">Comment</label>
+            <textarea 
+              id="content" 
+              rows="3" 
+              class="form-control" 
+              formControlName="content" 
+              [class.is-invalid]="commentForm.get('content')?.invalid && commentForm.get('content')?.touched">
+            </textarea>
+            <div class="invalid-feedback">
+              Comment must be at least 5 characters long.
+            </div>
+          </div>
+  
+          <button type="submit" class="btn btn-gradient me-2" [disabled]="commentForm.invalid">
+            {{ editingCommentId ? 'Update Comment' : 'Add Comment' }}
+          </button>
+          
+          <button type="button" *ngIf="editingCommentId" class="btn btn-secondary" (click)="cancelEdit()">
+            Cancel
+          </button>
+        </form>
+  
+        <!-- No comments message -->
+        <div *ngIf="comments.length === 0" class="alert alert-info mt-3">
+          No comments yet. Be the first to add one!
+        </div>
+      </div>
+    </div>
+</div>
+
+<style>
+.post-card {
+  border: none;
+  border-radius: 10px;
+  transition: transform 0.3s ease-in-out;
+}
+.post-card:hover {
+  transform: scale(1.02);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.comments-card {
+  border: none;
+  border-radius: 10px;
+  padding: 20px;
+  background: linear-gradient(to right, #4A90E2, #50BFA5);
+  color: white;
+}
+
+.comment-item {
+  background: #f8f9fa;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  padding: 10px;
+}
+
+.btn-gradient {
+  background: linear-gradient(to right, #4A90E2, #50BFA5);
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  transition: background 0.3s ease-in-out;
+}
+.btn-gradient:hover {
+  background: linear-gradient(to right, #3A78C2, #40A88A);
+}
+
+.btn-edit {
+  background: #2C7873;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 5px;
+  transition: background 0.3s ease-in-out;
+}
+</style>
